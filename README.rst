@@ -7,21 +7,21 @@ django-monit - A Simple Monit Collector
     django-monit is currently very preliminary and is best for people who
     are comfortable installing reusable apps in Django projects.
 
-django-monit is a very dumb (but free) replacement for `M/Monit`_, the commerical 
+django-monit is a very dumb (but free) replacement for `M/Monit`_, the commerical
 product built around the amazing Monit_ management and monitoring tool.
 
-django-monit is a reusable Django_ application providing a central Monit 
+django-monit is a reusable Django_ application providing a central Monit
 "collector" and storage of the Monit nodes' information and events.  Currently,
 django-monit can be installed as an app within an existing Django site.
 In the future, a tool could build a simple Django project if someone wished
 to only deploy django-monit.
 
-At this point, django-monit only acts as a collector of information from any 
+At this point, django-monit only acts as a collector of information from any
 number of Monit nodes, and can not push restart commands to the nodes as M/Monit
 can do.
 
 My goal currently is to create a tool for making Monit data easily accessible
-from a Django project, rather than acting as a replacement for M/Monit. 
+from a Django project, rather than acting as a replacement for M/Monit.
 
 django-monit has been tested on the Django 1.2 trunk using Monit 5.0.3 provided
 as a Ubuntu 9.10 package.
@@ -30,7 +30,7 @@ as a Ubuntu 9.10 package.
 .. _`M/Monit`: http://mmonit.com/
 .. _Django: http://www.djangoproject.com
 
- 
+
 Installation
 -------------
 
@@ -66,7 +66,7 @@ Dependencies
 Testing
 -------
 
-If you have `checked out <http://github.com/johnpaulett/django-monit>`_ the 
+If you have `checked out <http://github.com/johnpaulett/django-monit>`_ the
 source, you can run the test suite, which uses a simple Django project
 in the test_project folder::
 
@@ -75,4 +75,14 @@ in the test_project folder::
     create_env.sh
     # run the tests
     ./manage.py test monit
+
+Running in Django 1.8
+---------------------
+
+Quick and hacky way to run this app in Django 1.8
+
+Copy the monit folder into the Django project and follow the installation instructions above. Also create migrations as follows::
+
+    python manage.py makemigrations monit
+    python manage.py migrate
 
