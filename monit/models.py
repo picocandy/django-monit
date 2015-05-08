@@ -12,7 +12,7 @@ def find(xml, path=None, attr=None):
 
     if elem is None:
         return None
-    
+
     if attr is not None:
         return elem.get(attr)
     return elem.text
@@ -20,7 +20,7 @@ def find(xml, path=None, attr=None):
 def collect(data):
     xml = etree.fromstring(data)
     return Server.parse(xml)
-   
+
 
 class Server(models.Model):
     monitid = models.CharField(max_length=32, unique=True)
@@ -34,24 +34,24 @@ class Server(models.Model):
 
     @models.permalink
     def get_absolute_url(self):
-        return ('server_detail', [self.name]) 
+        return ('server_detail', [self.name])
 
     def __unicode__(self):
         return self.name
-   
+
     @classmethod
     def parse(cls, xml):
-        monitid = find(xml, 'server/id')
+        monitid = find(xml, attr='id')
 
         server, created = cls.objects.get_or_create(monitid=monitid,
                                                     defaults={'localhostname': find(xml, 'server/localhostname')})
-        
+
         server.uptime = find(xml, 'server/uptime')
-        server.version = find(xml, 'server/version')
+        server.version = find(xml, attr='version')
 
         # save so we can get an ID for the childrens' ForeignKeys
         server.save()
-        
+
         for service_xml in xml.findall('service'):
             service_type = find(service_xml, attr='type')
             try:
@@ -83,10 +83,10 @@ class Service(models.Model):
     name = models.TextField(db_index=True)
     status = models.PositiveIntegerField(choices=STATUS_CHOICES, null=True)
 
-    # collected_time = 
+    # collected_time =
 
     class ServiceTypeNotFound(Exception): pass
-        
+
     @classmethod
     def cls_from_type(cls, service_type_code):
         # TODO consider using Python's abc
@@ -95,7 +95,7 @@ class Service(models.Model):
                 return sub
         raise Service.ServiceTypeNotFound()
 
-    
+
     @classmethod
     def parse(cls, server, xml):
         name = find(xml, 'name')
@@ -117,24 +117,24 @@ class Service(models.Model):
 class Process(Service):
     server = models.ForeignKey('Server')
     uptime = models.PositiveIntegerField(null=True, blank=True)
-    
+
     # monit type code for processes
     service_type = 3
 
     @models.permalink
     def get_absolute_url(self):
-        return ('process_detail', [self.server.name, self.name]) 
+        return ('process_detail', [self.server.name, self.name])
 
     @classmethod
     def parse(cls, server, xml):
         service = super(Process, cls).parse(server, xml)
         service.uptime = find(xml, 'uptime')
         return service
-        
+
 
 class System(Service):
     server = models.OneToOneField('Server')
-    
+
     # monit type code for systems
     service_type = 5
 
@@ -143,7 +143,7 @@ class Event(models.Model):
     service = models.TextField()
     state = models.PositiveIntegerField()
     action = models.PositiveIntegerField()
-    message = models.TextField()    
+    message = models.TextField()
 
     @classmethod
     def parse(cls, server, xml):

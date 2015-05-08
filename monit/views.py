@@ -17,11 +17,11 @@ def collector(request):
     #TODO need to dig more into the monit collector protocol
 
     # only allow POSTs
-    if not request.POST:
+    if request.method != 'POST':
         return HttpResponseNotAllowed(['POST'])
 
     # make sure they gave us some data
-    data = request.raw_post_data
+    data = request.body
     if data is None or len(data) == 0:
         return HttpResponseBadRequest('need some data')
 
@@ -48,4 +48,4 @@ def process_detail(request, server_name, process_name,
     process = get_object_or_404(server.process_set.all(), name=process_name)
     return render_response(request, template_name,
                            {'server': server, 'process': process})
-    
+
